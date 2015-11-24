@@ -15,10 +15,20 @@ app.get('/auth/linkedin', function(req, res) {
 app.get('/auth/linkedin/callback/', function(req, res) {
   Linkedin.auth.getAccessToken(res, req.query.code, req.query.state, function(err, results) {
     if ( err ) {
+      res.sendStatus(400);
       return console.error(err);
     }
 
     console.log(results);
+
+    var linkedin = Linkedin.init(results.access_token);
+    linkedin.people.me(['id', 'first-name', 'last-name', 'picture-urls::(original)'], function(err, $in) {
+      console.log($in);
+      // Loads the profile of access token owner.
+    });
+    // linkedin.connections.retrieve(function(err, connections) {
+    //   debugger;
+    // });
     return res.redirect('/');
   });
 });
